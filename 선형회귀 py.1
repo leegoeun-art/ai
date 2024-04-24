@@ -1,0 +1,28 @@
+import tensorflow as tf #여기서 tf는 별칭
+
+xData = [1, 2, 3, 4, 5, 6, 7]
+yData = [25000, 55000, 75000, 110000, 128000, 155000, 180000]
+
+W = tf.Variable(tf.random_uniform([1], -100, 100))
+b = tf.Variable(tf.random_uniform([1], -100, 100))
+
+X = tf.placeholder(tf.float32)
+Y = tf.placeholder(tf.float32)
+
+H = W * X + b  # 가설(Hypothesis)을 정의합니다.
+
+cost = tf.reduce_mean(tf.square(H - Y)) 
+a = tf.Variable(0.01) #점프 수치를 1로 바꾸면, 점프의 폭이 너무 커서 곡선 밖으로 튀어나감
+optimizer = tf.train.GradientDescentOptimizer(a)
+train = optimizer.minimize(cost)
+
+init = tf.global_variables_initializer()  # 올바른 함수 이름을 사용합니다.
+sess = tf.Session()
+sess.run(init)
+
+for i in range(5001):
+    sess.run(train, feed_dict={X: xData, Y: yData})
+    if i % 500 == 0:
+        print(i, sess.run(cost, feed_dict={X: xData, Y: yData}), sess.run(W), sess.run(b))
+
+print(sess.run(H, feed_dict={X: [8]}))
